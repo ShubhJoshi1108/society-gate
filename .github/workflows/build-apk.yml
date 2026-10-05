@@ -1,6 +1,5 @@
 # Builds the Android APK for free on GitHub's servers.
-# Push to GitHub → Actions tab → "Build APK" → download the artifact,
-# or create a tag like v1.0.0 to publish it on the Releases page.
+# Every push to main builds the APK and publishes it on the Releases page.
 name: Build APK
 
 on:
@@ -21,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -59,8 +58,14 @@ jobs:
           name: society-gate-apk
           path: app/build/society-gate.apk
 
+      # Every update to main becomes a downloadable release:
+      # https://github.com/<you>/society-gate/releases/latest
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v1.0.{0}', github.run_number) }}
+          name: Society Gate ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('v1.0.{0}', github.run_number) }}
+          body: Download society-gate.apk below and install it on Android.
+          make_latest: true
           files: app/build/society-gate.apk
