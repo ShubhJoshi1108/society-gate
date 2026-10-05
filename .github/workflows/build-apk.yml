@@ -1,0 +1,66 @@
+# Builds the Android APK for free on GitHub's servers.
+# Push to GitHub → Actions tab → "Build APK" → download the artifact,
+# or create a tag like v1.0.0 to publish it on the Releases page.
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate Android project
+        run: |
+          flutter create --platforms=android --org org.societygate --project-name society_gate .
+          python3 tool/patch_android.py
+          rm -f test/widget_test.dart
+
+      # Optional but recommended: a fixed signing key so residents can install updates
+      # without uninstalling. Create once (see README) and save as repo secret SIGNING_KEYSTORE_BASE64.
+      - name: Use stable signing key
+        env:
+          KS: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+        if: env.KS != ''
+        run: |
+          mkdir -p ~/.android
+          echo "$KS" | base64 -d > ~/.android/debug.keystore
+
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - run: flutter build apk --release
+
+      - name: Rename APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk build/society-gate.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: society-gate-apk
+          path: app/build/society-gate.apk
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/society-gate.apk

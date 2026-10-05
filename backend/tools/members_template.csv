@@ -1,0 +1,7 @@
+flat,name,email,phone,role,password
+1,Rahul Sharma,h1.rahul@mysociety.local,9876543210,resident,
+1,Neha Sharma,h1.neha@mysociety.local,9876500000,resident,
+2,Imran Khan,h2@mysociety.local,9811111111,resident,
+245,Lakshmi Iyer,h245@mysociety.local,9822222222,resident,
+,Main Gate Guard,guard1@mysociety.local,9000000001,guard,
+,Society Secretary,secretary@mysociety.local,9000000009,admin,

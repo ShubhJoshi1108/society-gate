@@ -1,0 +1,12 @@
+# Free automatic HTTPS (Let's Encrypt) for both names.
+
+# PocketBase API + admin dashboard (/_/)
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy pocketbase:8090
+}
+
+# ntfy push server (open-source notifications)
+{$PUSH_DOMAIN} {
+	reverse_proxy ntfy:80
+}

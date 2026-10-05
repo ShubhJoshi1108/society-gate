@@ -1,0 +1,44 @@
+# Society Gate – complete backend (PocketBase + ntfy + Caddy for free HTTPS)
+# Start:  cp .env.example .env  (edit DOMAIN + PUSH_DOMAIN)  &&  docker compose up -d --build
+services:
+  pocketbase:
+    build: ./pocketbase
+    restart: unless-stopped
+    environment:
+      - PUBLIC_URL=https://${DOMAIN}
+      - NTFY_URL=http://ntfy:80
+      - NTFY_PUBLIC_URL=https://${PUSH_DOMAIN}
+      - EXPIRE_MINUTES=${EXPIRE_MINUTES:-10}
+      - HOUSE_COUNT=${HOUSE_COUNT:-400}
+      - TZ=Asia/Kolkata
+    volumes:
+      - ./data/pb_data:/pb/pb_data
+
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    command: serve
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Kolkata
+      - NTFY_BASE_URL=https://${PUSH_DOMAIN}
+      - NTFY_BEHIND_PROXY=true
+      - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
+      - NTFY_CACHE_DURATION=12h
+      # Topics are 24-char random secrets generated per user.
+      - NTFY_AUTH_DEFAULT_ACCESS=read-write
+    volumes:
+      - ./data/ntfy:/var/lib/ntfy
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN}
+      - PUSH_DOMAIN=${PUSH_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy:/data
+    depends_on: [pocketbase, ntfy]

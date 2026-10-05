@@ -1,0 +1,10 @@
+backend/.env
+backend/data/
+members_credentials.csv
+*.keystore
+app/build/
+app/.dart_tool/
+app/android/
+app/ios/
+app/.flutter-plugins*
+app/pubspec.lock
