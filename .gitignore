@@ -8,3 +8,8 @@ app/android/
 app/ios/
 app/.flutter-plugins*
 app/pubspec.lock
+backend/pocketbase/pocketbase
+backend/pocketbase/pocketbase.exe
+backend/pocketbase/pb_data/
+backend/pocketbase/LICENSE.md
+backend/pocketbase/CHANGELOG.md

@@ -50,6 +50,15 @@ A 500-flat society uses well under 1 GB of disk per year (photos compressed to ~
 
 ---
 
+## Quick test on your own laptop (10 minutes)
+
+1. Download this repo: green **Code** button → **Download ZIP** → extract.
+2. Windows: double-click **START-TEST-SERVER**. Mac/Linux: `sh start-test-server.sh`.
+   It downloads the server, creates test logins and shows the address to type on the phone.
+3. On the phone (same Wi-Fi), install the APK from **Releases**, enter the address shown, log in as
+   `res245@test.com` / `Test12345`, then ⚙️ → Install ntfy → Subscribe → Test.
+4. Log out, log in as `guard@test.com` / `Test12345` → New visitor → 245 → send → approve from the notification.
+
 ## Setup (≈30 minutes, one time)
 
 ### 1. Get a server and two free names
