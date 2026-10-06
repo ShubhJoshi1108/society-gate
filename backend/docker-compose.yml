@@ -13,6 +13,9 @@ services:
       - TZ=Asia/Kolkata
     volumes:
       - ./data/pb_data:/pb/pb_data
+    ports:
+      # only reachable from the server itself (used by the installer)
+      - "127.0.0.1:8090:8090"
 
   ntfy:
     image: binwiederhier/ntfy:latest

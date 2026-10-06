@@ -59,6 +59,18 @@ A 500-flat society uses well under 1 GB of disk per year (photos compressed to ~
    `res245@test.com` / `Test12345`, then ⚙️ → Install ntfy → Subscribe → Test.
 4. Log out, log in as `guard@test.com` / `Test12345` → New visitor → 245 → send → approve from the notification.
 
+## Go live in one command (free Oracle Cloud server)
+
+1. At **duckdns.org** create two names, e.g. `greenvalley` and `greenvalley-push`, and copy your **token**.
+2. Create a free Oracle Cloud **Ubuntu** VM and open ports **80** and **443** in its Security List.
+3. Connect to the VM and run (your name, token and email):
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/ShubhJoshi1108/society-gate/main/install-server.sh \
+     | sudo bash -s -- greenvalley YOUR-DUCKDNS-TOKEN secretary@gmail.com
+   ```
+   It installs everything, gets free HTTPS, and prints the admin password and test logins.
+   Run the same command again any time to update; data is kept.
+
 ## Setup (≈30 minutes, one time)
 
 ### 1. Get a server and two free names
