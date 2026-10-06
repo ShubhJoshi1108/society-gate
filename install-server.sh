@@ -41,6 +41,15 @@ fi
 # keep the address correct even if the server's IP ever changes
 [ "${SKIP_DUCKDNS:-0}" = 1 ] || echo "*/5 * * * * root curl -fsS 'https://www.duckdns.org/update?domains=${NAME},${NAME}-push&token=${TOKEN}&ip=' >/dev/null 2>&1" > /etc/cron.d/society-gate-duckdns
 
+# Small free servers (1 GB, e.g. Oracle VM.Standard.E2.1.Micro) need extra swap memory
+MEM_MB=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)
+if [ "$MEM_MB" -lt 2000 ] && ! swapon --show | grep -q /swapfile; then
+  echo "Small server ($MEM_MB MB RAM): adding 2 GB of swap memory"
+  fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048 status=none
+  chmod 600 /swapfile && mkswap /swapfile >/dev/null && swapon /swapfile
+  grep -q '^/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+
 say "2/7  Installing Docker (first time takes a few minutes)"
 if ! command -v docker >/dev/null 2>&1; then
   curl -fsSL https://get.docker.com | sh >/dev/null
